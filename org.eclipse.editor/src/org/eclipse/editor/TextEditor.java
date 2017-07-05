@@ -37,24 +37,26 @@ public class TextEditor implements IDocumentListener {
 	private IDocument loadFile(MPart pPart) {
 
 		String fileName = pPart.getContainerData();
-		if (fileName == null && "new".equals(pPart.getLabel())) {
+		if (fileName == null) {
 			if (Platform.getApplicationArgs().length > 0) {
 				fileName = Platform.getApplicationArgs()[0];
-			} else if (Platform.getCommandLineArgs().length > 0) {
-				fileName = Platform.getCommandLineArgs()[0];
 			}
 		}
 
 		byte[] allBytes = new byte[0];
 
-		File file = new File(fileName);
-		if (file.exists()) {
-			pPart.setLabel(file.getName());
-			try {
-				allBytes = Files.readAllBytes(file.toPath());
-			} catch (IOException e) {
-				allBytes = e.getMessage().getBytes();
-				e.printStackTrace();
+		if (fileName == null) {
+			pPart.setLabel("new");
+		} else {
+			File file = new File(fileName);
+			if (file.exists()) {
+				pPart.setLabel(file.getName());
+				try {
+					allBytes = Files.readAllBytes(file.toPath());
+				} catch (IOException e) {
+					allBytes = e.getMessage().getBytes();
+					e.printStackTrace();
+				}
 			}
 		}
 		IDocument document = new Document(new String(allBytes));
